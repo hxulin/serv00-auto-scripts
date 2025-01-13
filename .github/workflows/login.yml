@@ -42,3 +42,21 @@ jobs:
         run: |  
           set -e  
           xvfb-run --server-args="-screen 0 1280x1024x24" node src/main.js
+
+      - name: Init git environment
+        env:
+          ACTION_DEPLOY_KEY: ${{ secrets.ACTION_DEPLOY_KEY }}
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$ACTION_DEPLOY_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git config --global user.name "hxulin"
+          git config --global user.email "1455936807@qq.com"
+
+      - name: Update modified time
+        run: |
+          echo `date "+%Y-%m-%d %H:%M:%S"` > last-modified.txt
+          git add -A
+          git commit -m '更新构建时间'
+          git push git@github.com:hxulin/serv00-auto-scripts.git main
