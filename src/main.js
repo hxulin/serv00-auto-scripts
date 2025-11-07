@@ -76,7 +76,16 @@ async function sendTelegramMessage(token, chatId, message) {
             await page.type('#id_username', username);
             await page.type('#id_password', password);
 
-            const [loginButton] = await page.$x("//button[./span[text()='SIGN IN']]");
+            let loginButton;
+            await page.evaluate(() => {
+                const btns = document.querySelectorAll('button[type=submit]');
+                for (const btn of btns) {
+                    if (btn.innerText === 'SIGN IN') {
+                        loginButton = btn;
+                        break;
+                    }
+                }
+            });
 
             // const loginButton = await page.$('#submit');
             if (loginButton) {
