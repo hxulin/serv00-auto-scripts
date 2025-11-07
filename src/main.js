@@ -76,7 +76,17 @@ async function sendTelegramMessage(token, chatId, message) {
             await page.type('#id_username', username);
             await page.type('#id_password', password);
 
-            const loginButton = await page.$('#submit');
+            const buttons = await page.$$(`button[type="submit"]`);
+            let loginButton;
+            for (const btn of buttons) {
+                const text = await page.evaluate(el => el.textContent.trim(), btn);
+                if (text === 'SIGN IN') {
+                    loginButton = btn;
+                    break;
+                }
+            }
+
+            // const loginButton = await page.$('#submit');
             if (loginButton) {
                 await loginButton.click();
             } else {
